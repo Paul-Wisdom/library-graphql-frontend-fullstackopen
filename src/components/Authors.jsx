@@ -6,7 +6,7 @@ const Authors = (props) => {
   const [birthyear, setBirthyear] = useState('')
   const [selectedAuthor, setSelectedAuthor] = useState(null)
   const result = useQuery(ALL_AUTHORS)
-  console.log(result)
+  // console.log(result)
   const [editAuthor, editResult] = useMutation(EDIT_AUTHOR_BIRTHYEAR)
 
   if (!props.show) {
