@@ -17,7 +17,7 @@ const NewBook = (props) => {
     event.preventDefault()
 
     console.log('add book...')
-    addBook({variables: {title, published: parseInt(published), author, genres}, refetchQueries: [ALL_AUTHORS, ALL_BOOKS]})
+    addBook({variables: {title, published: parseInt(published), author, genres}, refetchQueries: [ALL_AUTHORS]})
 
     setTitle('')
     setPublished('')

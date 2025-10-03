@@ -5,12 +5,17 @@ import { useEffect, useState } from "react"
 export const RecommendationView = ({ show, user }) => {
     const [books, setbooks] = useState([])
     console.log(user)
-    const result = useQuery(ALL_BOOKS_BY_GENRE, {
-        variables: { genre: user.favoriteGenre }
+    let result = {}
+
+    const genre = user? user.favoriteGenre : ['default']
+    result = useQuery(ALL_BOOKS_BY_GENRE, {
+        variables: { genre: genre }
     })
     console.log(result)
+
+
     useEffect(() => {
-        if(result.data) setbooks(result.data.allBooks)
+        if (result.data) setbooks(result.data.allBooks)
     }, [result.data])
     if (!show) return null
 

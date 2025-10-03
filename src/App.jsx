@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import { LoginForm } from "./components/Login";
 import Notification from "./components/Notification";
-import { CURRENT_USER } from "./queries";
+import { ALL_BOOKS, BOOK_ADDED, CURRENT_USER } from "./queries";
 import { RecommendationView } from "./components/RecommendationView";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useSubscription } from "@apollo/client/react";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -14,6 +14,24 @@ const App = () => {
   const [msg, setMsg] = useState(null)
 
   const user = useQuery(CURRENT_USER)
+
+  useEffect(() => {
+    const token = window.localStorage.getItem('library-token')
+    setToken(token)
+  },[])
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const newBook = data.data.bookAdded
+      if (newBook) {
+        console.log(newBook)
+        window.alert(`New book ${newBook.title} added`)
+        client.cache.updateQuery({query: ALL_BOOKS}, ({allBooks}) => {
+          return {allBooks: allBooks.concat(newBook)}
+        })
+      }
+    }
+  })
 
   const handleLogout = () => {
     setToken(null)
@@ -41,7 +59,7 @@ const App = () => {
           (<button onClick={() => setPage("login")}>login</button>)}
       </div>
 
-      <Notification msg={msg}/>
+      <Notification msg={msg} />
 
       <Authors show={page === "authors"} />
 
@@ -49,9 +67,9 @@ const App = () => {
 
       <NewBook show={page === "add"} />
 
-      {user.data && <RecommendationView show={page === 'recommend'} user={user.data.me}/>}
+      {user.data ? <RecommendationView show={page === 'recommend'} user={user.data.me} /> : <></>}
 
-      <LoginForm show={page === "login"} setToken={setToken} updateNotification={updateNotification} setPage={setPage}/>
+      <LoginForm show={page === "login"} setToken={setToken} updateNotification={updateNotification} setPage={setPage} />
     </div>
   );
 };
